@@ -98,7 +98,7 @@ export class CommandManager {
 
     if (!cmd.startsWith(this.prefix) || msg.author.bot) return;
 
-    const command = this.commands.get(cmd);
+    const command = this.commands.get(cmd.replace(this.prefix, ""));
     if (!command)
       return;
 
