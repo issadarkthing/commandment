@@ -43,16 +43,29 @@ export class CommandManager {
   private commands = new Map<string, Command>();
   private blockList = new Set<string>();
   private commandRegisterLog: CommandLog[] = [];
-  /** Show command logging */
+  /** 
+   * Show command logging 
+   * @member {boolean} verbose
+   * */
   verbose = false;
-  /** Bot's prefix */
+  /** 
+   * Bot's prefix 
+   * @member {string} prefix
+   * */
   public prefix: string;
 
+  /** 
+   * @param {string} prefix - The bot's prefix
+   * */
   constructor(prefix: string) {
     this.prefix = prefix;
   }
 
-  /** Register a singular command */
+  /** 
+   * Register a singular command 
+   * @param {string} name - The name of the command
+   * @param {Command} cmd - The subclass of Command
+   * */
   registerCommand(name: string, cmd: Command) {
     if (this.commands.has(name)) {
       throw new Error(`command "${name}" has already been defined`);
@@ -64,6 +77,8 @@ export class CommandManager {
   /**
    * Register commands from the whole directory. All command files should
    * default export the Command class.
+   *
+   * @param {string} dir - Directory where all the command files reside.
    *
    * @example
    * const commandManager = new CommandManager("!");
@@ -116,7 +131,10 @@ export class CommandManager {
     }
   }
 
-  /** This should be attached to the "messageCreate" event */
+  /** 
+   * This should be attached to the "messageCreate" event 
+   * @param {Message} msg - discord's Message object
+   * */
   async handleMessage(msg: Message) {
     const words = msg.content.split(' ');
     const cmd = words[0];
