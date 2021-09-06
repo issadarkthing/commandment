@@ -7,13 +7,26 @@ import util from "util";
 import { sha1 } from "./utils";
 import { performance } from "perf_hooks";
 
+/**
+ * Command is abstract class that should be extended to make your own custom
+ * command. It is also need to be exported as default when using
+ * `registerCommands`.
+ * */
 export abstract class Command {
+  /** Command name. This will be used to identify command. */
   abstract name: string;
+  /**
+   * Array of aliases for the command. This is optional, you can omit this if
+   * you don't want any aliases for a particular command.
+   * */
   aliases: string[] = [];
-  /** blocks command if there's already an instance of it running under the same
-   * user */
+  /**
+   * Blocks command if there's already an instance of it running under the same
+   * user
+   * */
   block = false;
 
+  /** This is where your main logic should reside for a particular command. */
   abstract exec(msg: Message, args: string[]): unknown | Promise<unknown>;
 }
 
@@ -25,17 +38,21 @@ interface CommandLog {
 
 const readdir = util.promisify(fs.readdir);
 
+/** CommandManager stores all your commands */
 export class CommandManager {
   private commands = new Map<string, Command>();
   private blockList = new Set<string>();
   private commandRegisterLog: CommandLog[] = [];
+  /** Show command logging */
   verbose = false;
+  /** Bot's prefix */
   public prefix: string;
 
   constructor(prefix: string) {
     this.prefix = prefix;
   }
 
+  /** Register a singular command */
   registerCommand(name: string, cmd: Command) {
     if (this.commands.has(name)) {
       throw new Error(`command "${name}" has already been defined`);
@@ -44,9 +61,17 @@ export class CommandManager {
     this.commands.set(name, cmd);
   }
 
+  /**
+   * Register commands from the whole directory. All command files should
+   * default export the Command class.
+   *
+   * @example
+   * const commandManager = new CommandManager("!");
+   * commandManager.registerCommands(path.join(__dirname, "./commands"));
+   * */
   async registerCommands(dir: string) {
-    this.verbose && 
-      console.log(`=== ${chalk.blue("Registering command(s)")} ===`)
+    this.verbose &&
+      console.log(`=== ${chalk.blue("Registering command(s)")} ===`);
 
     const files = await readdir(dir);
     const initial = performance.now();
@@ -91,6 +116,7 @@ export class CommandManager {
     }
   }
 
+  /** This should be attached to the "messageCreate" event */
   async handleMessage(msg: Message) {
     const words = msg.content.split(' ');
     const cmd = words[0];
