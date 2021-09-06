@@ -4,7 +4,7 @@
   "description": "discord.js command handling framework",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nodemon ./dist/example/index.js"
   },
   "keywords": [
     "discord",
@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@types/common-tags": "^1.8.1",
+    "nodemon": "^2.0.12",
     "typescript": "^4.4.2"
   }
 }
