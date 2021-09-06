@@ -30,6 +30,11 @@ export class CommandManager {
   private blockList = new Set<string>();
   private commandRegisterLog: CommandLog[] = [];
   verbose = false;
+  public prefix: string;
+
+  constructor(prefix: string) {
+    this.prefix = prefix;
+  }
 
   registerCommand(name: string, cmd: Command) {
     if (this.commands.has(name)) {
