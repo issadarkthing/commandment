@@ -91,7 +91,13 @@ export class CommandManager {
     }
   }
 
-  async handleMessage(cmd: string, msg: Message, args: string[]) {
+  async handleMessage(msg: Message) {
+    const words = msg.content.split(' ');
+    const cmd = words[0];
+    const args = words.slice(1);
+
+    if (!cmd.startsWith(this.prefix) || msg.author.bot) return;
+
     const command = this.commands.get(cmd);
     if (!command)
       return;
