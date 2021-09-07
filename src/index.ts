@@ -91,6 +91,10 @@ export class CommandManager {
     const files = await readdir(dir);
     const initial = performance.now();
     for (const file of files) {
+
+      // skip .d.ts files
+      if (file.endsWith(".d.ts")) continue;
+
       const initial = performance.now();
       const filePath = path.join(dir, file);
       // eslint-disable-next-line
