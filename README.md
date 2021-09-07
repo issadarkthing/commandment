@@ -13,6 +13,7 @@ handling for the bot.
   while the other command is still running
 - lightweight
 - easy to use
+- command throttling
 
 ## Installing
 ```sh
@@ -33,6 +34,15 @@ const commandManager = new CommandManager(COMMAND_PREFIX);
 commandManager.verbose = true;
 commandManager.registerCommands(path.resolve(__dirname, "./commands"));
 
+commandManager.registerCommandNotFoundHandler((msg, cmdName) => {
+  msg.channel.send(`Cannot find command "${cmdName}"`);
+})
+
+commandManager.registerCommandOnThrottleHandler((msg, cmd, timeLeft) => {
+  const time = (timeLeft / 1000).toFixed(2);
+  msg.channel.send(`You cannot run ${cmd.name} command after ${time} s`);
+})
+
 client.on("ready", () => console.log(client.user?.username, "is ready!"))
 client.on("messageCreate", msg => commandManager.handleMessage(msg));
 
@@ -47,6 +57,7 @@ import { Command } from "../../index";
 export default class extends Command {
   name = "ping";
   aliases = ["p"];
+  throttle = 10 * 1000; // 10 seconds
 
   exec(msg: Message, args: string[]) {
     msg.channel.send("pong");
