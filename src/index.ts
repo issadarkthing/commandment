@@ -105,7 +105,7 @@ export class CommandManager {
    * @param {Function} fn - Function to be executed when command is on throttle
    * */
   registerCommandOnThrottleHandler(
-    fn: CommandManager["commandOnThrottleHandler"]
+    fn: (msg: Message, cmd: Command, timeLeft: number) => void,
   ) {
     this.commandOnThrottleHandler = fn;
   }
