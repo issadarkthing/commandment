@@ -9,6 +9,10 @@ const commandManager = new CommandManager(COMMAND_PREFIX);
 commandManager.verbose = true;
 commandManager.registerCommands(path.resolve(__dirname, "./commands"));
 
+commandManager.registerCommandNotFoundHandler((msg, cmdName) => {
+  msg.channel.send(`Cannot find command "${cmdName}"`);
+})
+
 client.on("ready", () => console.log(client.user?.username, "is ready!"))
 client.on("messageCreate", msg => commandManager.handleMessage(msg));
 

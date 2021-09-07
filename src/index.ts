@@ -43,6 +43,7 @@ export class CommandManager {
   private commands = new Map<string, Command>();
   private blockList = new Set<string>();
   private commandRegisterLog: CommandLog[] = [];
+  private commandNotFoundHandler?: (msg: Message, name: string) => void;
   /**
    * Show command logging
    * @member {boolean} verbose
@@ -72,6 +73,16 @@ export class CommandManager {
     }
 
     this.commands.set(name, cmd);
+  }
+
+  /**
+   * Register handler for command not found error. By default, the error will be
+   * ignored.
+   * @param {Function} fn - Function to be executed when command not found error
+   * occurs
+   * */
+  registerCommandNotFoundHandler(fn: (msg: Message, cmdName: string) => void) {
+    this.commandNotFoundHandler = fn;
   }
 
   /**
@@ -146,9 +157,12 @@ export class CommandManager {
 
     if (!cmd.startsWith(this.prefix) || msg.author.bot) return;
 
-    const command = this.commands.get(cmd.replace(this.prefix, ""));
-    if (!command)
+    const commandName = cmd.replace(this.prefix, "");
+    const command = this.commands.get(commandName);
+    if (!command) {
+      this.commandNotFoundHandler && this.commandNotFoundHandler(msg, commandName);
       return;
+    }
 
     try {
       const initial = performance.now();
