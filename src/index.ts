@@ -18,13 +18,21 @@ export abstract class Command {
   /**
    * Array of aliases for the command. This is optional, you can omit this if
    * you don't want any aliases for a particular command.
+   * @member {string[]} aliases
    * */
   aliases: string[] = [];
   /**
    * Blocks command if there's already an instance of it running under the same
    * user
+   * @member {boolean} block
    * */
   block = false;
+
+  /**
+   * Throttle time in millisecond. Negative numbers are not allowed.
+   * @member {number} throttle
+   * */
+  throttle = 0;
 
   /** This is where your main logic should reside for a particular command. */
   abstract exec(msg: Message, args: string[]): unknown | Promise<unknown>;
@@ -42,8 +50,14 @@ const readdir = util.promisify(fs.readdir);
 export class CommandManager {
   private commands = new Map<string, Command>();
   private blockList = new Set<string>();
+  private throttleList = new Map<string, number>();
   private commandRegisterLog: CommandLog[] = [];
   private commandNotFoundHandler?: (msg: Message, name: string) => void;
+  private commandOnThrottleHandler?: (
+    msg: Message,
+    command: Command,
+    timeLeft: number
+  ) => void;
   /**
    * Show command logging
    * @member {boolean} verbose
@@ -86,6 +100,17 @@ export class CommandManager {
   }
 
   /**
+   * Register handler for command is on throttle. By default, the command will
+   * continue be blocked without any message.
+   * @param {Function} fn - Function to be executed when command is on throttle
+   * */
+  registerCommandOnThrottleHandler(
+    fn: CommandManager["commandOnThrottleHandler"]
+  ) {
+    this.commandOnThrottleHandler = fn;
+  }
+
+  /**
    * Register commands from the whole directory. All command files should
    * default export the Command class.
    *
@@ -102,7 +127,6 @@ export class CommandManager {
     const files = await readdir(dir);
     const initial = performance.now();
     for (const file of files) {
-
       // skip .d.ts files
       if (file.endsWith(".d.ts")) continue;
 
@@ -118,10 +142,10 @@ export class CommandManager {
         name: command.name,
         aliases: command.aliases,
         timeTaken,
-      })
+      });
 
       this.registerCommand(command.name, command);
-      command.aliases.forEach(alias => this.registerCommand(alias, command));
+      command.aliases.forEach((alias) => this.registerCommand(alias, command));
     }
 
     const now = performance.now();
@@ -151,7 +175,7 @@ export class CommandManager {
    * @param {Message} msg - discord's Message object
    * */
   async handleMessage(msg: Message) {
-    const words = msg.content.split(' ');
+    const words = msg.content.split(" ");
     const cmd = words[0];
     const args = words.slice(1);
 
@@ -160,19 +184,46 @@ export class CommandManager {
     const commandName = cmd.replace(this.prefix, "");
     const command = this.commands.get(commandName);
     if (!command) {
-      this.commandNotFoundHandler && this.commandNotFoundHandler(msg, commandName);
+      this.commandNotFoundHandler &&
+        this.commandNotFoundHandler(msg, commandName);
       return;
+    }
+
+    if (command.throttle !== 0) {
+      const id = `${commandName}/${msg.author.id}`;
+
+      if (this.throttleList.has(id)) {
+        const timeLeft = this.throttleList.get(id)! - Date.now();
+        this.commandOnThrottleHandler &&
+          this?.commandOnThrottleHandler(msg, command, timeLeft);
+
+        this.verbose &&
+          console.log(
+            `${chalk.blue(command.name)} command is blocked due to throttling`
+          );
+        return;
+      }
+
+      this.throttleList.set(id, Date.now() + command.throttle);
+
+      if (command.throttle < 0)
+        throw new Error(
+          `${command.name}: throttle time cannot be less than zero`
+        );
+
+      setTimeout(() => this.throttleList.delete(id), command.throttle);
     }
 
     try {
       const initial = performance.now();
       const printTimeTaken = () => {
         const timeTaken = (performance.now() - initial).toFixed(4);
-        this.verbose && console.log(
-          oneLine`${chalk.blue(command.name)} command took
+        this.verbose &&
+          console.log(
+            oneLine`${chalk.blue(command.name)} command took
           ${chalk.yellow(timeTaken, "ms")} to complete`
-        )
-      }
+          );
+      };
 
       if (command.block) {
         const id = `${command.name}_${msg.author.id}`;
@@ -191,11 +242,10 @@ export class CommandManager {
 
       await command.exec(msg, args);
       printTimeTaken();
-
     } catch (err) {
       const commandName = command.name;
       const argList = args.join(", ");
-      const time = (new Date()).toString();
+      const time = new Date().toString();
       const stackTrace = (err as Error).stack!;
       const checksum = sha1(stackTrace);
 
@@ -205,8 +255,7 @@ export class CommandManager {
       console.error(chalk.yellow("Time:"), chalk.magenta(time));
       console.error(chalk.yellow("Checksum:"), checksum);
       console.error(chalk.yellow("Caused by:"), msg.author.username);
-      console.error(err)
-
+      console.error(err);
     }
   }
 }

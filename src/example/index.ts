@@ -13,6 +13,11 @@ commandManager.registerCommandNotFoundHandler((msg, cmdName) => {
   msg.channel.send(`Cannot find command "${cmdName}"`);
 })
 
+commandManager.registerCommandOnThrottleHandler((msg, cmd, timeLeft) => {
+  const time = (timeLeft / 1000).toFixed(2);
+  msg.channel.send(`You cannot run ${cmd.name} command after ${time} ms`);
+})
+
 client.on("ready", () => console.log(client.user?.username, "is ready!"))
 client.on("messageCreate", msg => commandManager.handleMessage(msg));
 
