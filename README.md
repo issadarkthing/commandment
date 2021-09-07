@@ -1,5 +1,5 @@
 # Commandment
-Lightweight [discord.js](https://discord.js.org/#/) command framework.
+Simple [discord.js](https://discord.js.org/#/) command framework.
 
 
 ## Why
@@ -13,6 +13,11 @@ handling for the bot.
   while the other command is still running
 - lightweight
 - easy to use
+
+## Installing
+```sh
+$ npm install @jiman24/commandment
+```
 
 ## Example
 `index.ts`
