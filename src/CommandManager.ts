@@ -206,14 +206,14 @@ export class CommandManager {
           );
         } else {
           this.blockList.add(id);
-          await command.exec(msg, args);
+          await command.execute(msg, args);
           this.blockList.delete(id);
           printTimeTaken();
         }
         return;
       }
 
-      await command.exec(msg, args);
+      await command.execute(msg, args);
       printTimeTaken();
     } catch (err) {
       const commandName = command.name;

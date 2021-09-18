@@ -6,7 +6,7 @@ export default class extends Command {
   aliases = ["p"];
   throttle = 10 * 1000; // 10 seconds
 
-  exec(msg: Message, args: string[]) {
+  exec(msg: Message) {
     msg.channel.send("pong");
   }
 }

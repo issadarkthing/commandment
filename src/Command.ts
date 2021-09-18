@@ -37,5 +37,15 @@ export abstract class Command {
    * @param {Message} msg - Discord.js Message object
    * @param {string} args - Space seperated arguments
    * */
-  abstract exec(msg: Message, args: string[]): unknown | Promise<unknown>;
+  abstract exec(msg: Message, args?: string[]): unknown | Promise<unknown>;
+
+  /** 
+   * Executes command regardless if argument list is needed.
+   * @param {Message} msg - Discord.js Message object
+   * @param {string} args - Space seperated arguments
+   * */
+  execute(msg: Message, args: string[]) {
+    return this.exec.length === 2 ? 
+      this.exec(msg, args) : this.exec(msg);
+  }
 }
