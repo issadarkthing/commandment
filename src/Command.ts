@@ -33,6 +33,12 @@ export abstract class Command {
   throttle = 0;
 
   /** 
+   * Disable command.
+   * @member {boolean} disable
+   * */
+  disable = false;
+
+  /** 
    * This is where your main logic should reside for a particular command. 
    * @param {Message} msg - Discord.js Message object
    * @param {string} args - Space seperated arguments

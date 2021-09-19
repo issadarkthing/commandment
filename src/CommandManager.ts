@@ -40,7 +40,7 @@ export class CommandManager {
    * Bot's prefix
    * @member {string} prefix
    * */
-  public prefix: string;
+  prefix: string;
 
   /**
    * @param {string} prefix - The bot's prefix
@@ -198,23 +198,22 @@ export class CommandManager {
           );
       };
 
+      const id = `${command.name}_${msg.author.id}`;
       if (command.block) {
-        const id = `${command.name}_${msg.author.id}`;
         if (this.blockList.has(id)) {
           msg.channel.send(
             `There's already an instance of ${command.name} command running`
           );
-        } else {
-          this.blockList.add(id);
-          await command.execute(msg, args);
-          this.blockList.delete(id);
-          printTimeTaken();
+        
+          return;
         }
-        return;
       }
 
-      await command.execute(msg, args);
+      command.block && this.blockList.add(id)
+      command.disable || await command.execute(msg, args);
+      command.block && this.blockList.delete(id);
       printTimeTaken();
+
     } catch (err) {
       const commandName = command.name;
       const argList = args.join(", ");
