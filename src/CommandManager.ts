@@ -21,7 +21,7 @@ const readdir = util.promisify(fs.readdir);
  * @class
  * */
 export class CommandManager {
-  private commands = new Map<string, Command>();
+  readonly commands = new Map<string, Command>();
   private blockList = new Set<string>();
   private throttleList = new Map<string, number>();
   private commandRegisterLog: CommandLog[] = [];
@@ -131,7 +131,7 @@ export class CommandManager {
         const timeTaken = log.timeTaken.toFixed(4);
         const aliases = log.aliases.join(", ");
         console.log(
-          `${chalk.yellow(`[${timeTaken} ms]`)} ${log.name}\t\t${aliases}`
+          `${chalk.yellow(`[${timeTaken} ms]`)} ${log.name} | ${aliases}`
         );
       }
 

@@ -39,6 +39,12 @@ export abstract class Command {
   disable = false;
 
   /** 
+   * Add command description
+   * @member {string} description
+   * */
+  description?: string;
+
+  /** 
    * This is where your main logic should reside for a particular command. 
    * @param {Message} msg - Discord.js Message object
    * @param {string} args - Space seperated arguments
