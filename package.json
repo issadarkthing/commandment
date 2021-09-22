@@ -8,7 +8,7 @@
     "prepare": "tsc",
     "build": "tsc",
     "test": "nodemon ./dist/example/index.js",
-    "build:doc": "typedoc ./src/index.ts"
+    "build:doc": "typedoc --out public ./src/index.ts"
   },
   "keywords": [
     "discord",
