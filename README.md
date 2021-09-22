@@ -20,6 +20,9 @@ handling for the bot.
 $ npm install @jiman24/commandment
 ```
 
+## Documentation
+You can read about the documentation [here](https://commandment.vercel.app/)
+
 ## Example
 `index.ts`
 ```ts
