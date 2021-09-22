@@ -8,9 +8,11 @@ import { sha1 } from "./utils";
 import { performance } from "perf_hooks";
 import { Command } from "./Command";
 
+/** Logging info */
 interface CommandLog {
   name: string;
   aliases: string[];
+  /** Time taken command took to complete */
   timeTaken: number;
 }
 
@@ -33,14 +35,12 @@ export class CommandManager {
   ) => void;
   /**
    * Show command logging
-   * @member {boolean} verbose
    * */
   verbose = false;
   /**
    * Bot's prefix
-   * @member {string} prefix
    * */
-  prefix: string;
+  readonly prefix: string;
 
   /**
    * @param {string} prefix - The bot's prefix
