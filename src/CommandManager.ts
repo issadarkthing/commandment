@@ -49,6 +49,10 @@ export class CommandManager {
     this.prefix = prefix;
   }
 
+  private log(...values: any[]) {
+    this.verbose && console.log(...values);
+  }
+
   /**
    * Register a singular command
    * @param {string} name - The name of the command
@@ -94,8 +98,7 @@ export class CommandManager {
    * commandManager.registerCommands(path.join(__dirname, "./commands"));
    * */
   async registerCommands(dir: string) {
-    this.verbose &&
-      console.log(`=== ${chalk.blue("Registering command(s)")} ===`);
+    this.log(`=== ${chalk.blue("Registering command(s)")} ===`);
 
     const files = await readdir(dir);
     const initial = performance.now();
@@ -124,23 +127,21 @@ export class CommandManager {
     const now = performance.now();
     const timeTaken = (now - initial).toFixed(4);
 
-    if (this.verbose) {
-      this.commandRegisterLog.sort((a, b) => b.timeTaken - a.timeTaken);
+    this.commandRegisterLog.sort((a, b) => b.timeTaken - a.timeTaken);
 
-      for (const log of this.commandRegisterLog) {
-        const timeTaken = log.timeTaken.toFixed(4);
-        const aliases = log.aliases.join(", ");
-        console.log(
-          `${chalk.yellow(`[${timeTaken} ms]`)} ${log.name} | ${aliases}`
-        );
-      }
-
-      const commandCount = this.commandRegisterLog.length;
-      console.log(
-        oneLine`Loading ${chalk.green(commandCount)} command(s) took
-        ${chalk.yellow(timeTaken, "ms")}`
+    for (const log of this.commandRegisterLog) {
+      const timeTaken = log.timeTaken.toFixed(4);
+      const aliases = log.aliases.join(", ");
+      this.log(
+        `${chalk.yellow(`[${timeTaken} ms]`)} ${log.name} | ${aliases}`
       );
     }
+
+    const commandCount = this.commandRegisterLog.length;
+    this.log(
+      oneLine`Loading ${chalk.green(commandCount)} command(s) took
+      ${chalk.yellow(timeTaken, "ms")}`
+    );
   }
 
   /**
