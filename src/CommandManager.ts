@@ -183,10 +183,9 @@ export class CommandManager {
         this.commandOnThrottleHandler &&
           this?.commandOnThrottleHandler(msg, command, timeLeft);
 
-        this.verbose &&
-          console.log(
-            `${chalk.blue(command.name)} command is blocked due to throttling`
-          );
+        this.log(
+          `${chalk.blue(command.name)} command is blocked due to throttling`
+        );
         return;
       }
 
@@ -202,13 +201,15 @@ export class CommandManager {
 
     try {
       const initial = performance.now();
+
       const printTimeTaken = () => {
+
         const timeTaken = (performance.now() - initial).toFixed(4);
-        this.verbose &&
-          console.log(
-            oneLine`${chalk.blue(command.name)} command took
+        this.log(
+          oneLine`${chalk.blue(command.name)} command took
           ${chalk.yellow(timeTaken, "ms")} to complete`
-          );
+        );
+
       };
 
       const id = `${command.name}_${msg.author.id}`;
