@@ -98,6 +98,7 @@ export class CommandManager {
    * commandManager.registerCommands(path.join(__dirname, "./commands"));
    * */
   async registerCommands(dir: string) {
+
     this.log(`=== ${chalk.blue("Registering command(s)")} ===`);
 
     const files = await readdir(dir);
@@ -142,6 +143,7 @@ export class CommandManager {
       oneLine`Loading ${chalk.green(commandCount)} command(s) took
       ${chalk.yellow(timeTaken, "ms")}`
     );
+    this.log(`Command Prefix = ${this.prefix}`);
   }
 
   /**
