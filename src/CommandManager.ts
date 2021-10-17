@@ -7,6 +7,8 @@ import util from "util";
 import { sha1 } from "./utils";
 import { performance } from "perf_hooks";
 import { Command } from "./Command";
+//@ts-ignore
+import Table from "table-layout";
 
 /** Logging info */
 interface CommandLog {
@@ -130,13 +132,21 @@ export class CommandManager {
 
     this.commandRegisterLog.sort((a, b) => b.timeTaken - a.timeTaken);
 
+    const rows: Record<string, string>[] = [];
+
     for (const log of this.commandRegisterLog) {
       const timeTaken = log.timeTaken.toFixed(4);
       const aliases = log.aliases.join(", ");
-      this.log(
-        `${chalk.yellow(`[${timeTaken} ms]`)} ${log.name} | ${aliases}`
-      );
+      const timeTakenFmt = chalk.yellow(`[${timeTaken} ms]`);
+
+      rows.push({
+        timeTakenFmt,
+        name: log.name,
+        aliases,
+      });
     }
+
+    this.log((new Table(rows)).toString());
 
     const commandCount = this.commandRegisterLog.length;
     this.log(

@@ -24,7 +24,8 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "common-tags": "^1.8.0",
-    "discord.js": "^13.1.0"
+    "discord.js": "^13.1.0",
+    "table-layout": "^3.0.0"
   },
   "devDependencies": {
     "@types/common-tags": "^1.8.1",
