@@ -176,7 +176,7 @@ export class CommandManager {
     }
 
     if (command.throttle !== 0) {
-      const id = `${commandName}/${msg.author.id}`;
+      const id = `${commandName}_${msg.author.id}`;
 
       if (this.throttleList.has(id)) {
         const timeLeft = this.throttleList.get(id)! - Date.now();
