@@ -142,7 +142,7 @@ export class CommandManager {
       rows.push({
         timeTakenFmt,
         name: log.name,
-        aliases,
+        aliases: `| ${aliases}`,
       });
     }
 
