@@ -191,10 +191,11 @@ export class CommandManager {
 
       this.throttleList.set(id, Date.now() + command.throttle);
 
-      if (command.throttle < 0)
+      if (command.throttle < 0) {
         throw new Error(
           `${command.name}: throttle time cannot be less than zero`
         );
+      }
 
       setTimeout(() => this.throttleList.delete(id), command.throttle);
     }
