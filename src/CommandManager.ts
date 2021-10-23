@@ -117,6 +117,8 @@ export class CommandManager {
       const now = performance.now();
       const timeTaken = now - initial;
 
+      if (command.disable) continue;
+
       this.commandRegisterLog.push({
         name: command.name,
         aliases: command.aliases,
@@ -225,7 +227,7 @@ export class CommandManager {
       }
 
       command.block && this.blockList.add(id)
-      command.disable || await command.execute(msg, args);
+      await command.execute(msg, args);
       command.block && this.blockList.delete(id);
       printTimeTaken();
 
