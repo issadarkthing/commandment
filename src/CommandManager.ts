@@ -35,6 +35,9 @@ export class CommandManager {
     command: Command,
     timeLeft: number
   ) => void;
+  private commandErrorHandler?: (
+    err: unknown, msg?: Message, cmd?: string, args?: string[],
+  ) => void;
   /**
    * Show command logging
    * */
@@ -87,6 +90,18 @@ export class CommandManager {
     fn: (msg: Message, cmd: Command, timeLeft: number) => void,
   ) {
     this.commandOnThrottleHandler = fn;
+  }
+
+  /**
+   * Register error handler that was thrown inside Command#exec or
+   * Command#execute. If command error handler is registered, all errors thrown
+   * inside Command#execute will not be logged.
+   * @param {Function} fn - Function to be executed when error is thrown
+   * */
+  registerCommandErrorHandler(
+    fn: (error: unknown, msg?: Message, command?: string, args?: string[]) => void) 
+  {
+    this.commandErrorHandler = fn;
   }
 
   /**
@@ -232,6 +247,12 @@ export class CommandManager {
       printTimeTaken();
 
     } catch (err) {
+
+      if (this.commandErrorHandler) {
+        this.commandErrorHandler(err, msg, command.name, args);
+        return;
+      }
+
       const commandName = command.name;
       const argList = args.join(", ");
       const time = new Date().toString();
