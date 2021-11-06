@@ -98,10 +98,7 @@ export class CommandManager {
    * inside Command#execute will not be logged.
    * @param {Function} fn - Function to be executed when error is thrown
    * */
-  registerCommandErrorHandler(fn: (error: unknown) => void): void;
-  registerCommandErrorHandler(fn: (error: unknown, msg: Message) => void): void;
-  registerCommandErrorHandler(fn: (error: unknown, msg: Message, command: string) => void): void;
-  registerCommandErrorHandler(fn: (error: unknown, msg: Message, command: string, args: string[]) => void) {
+  registerCommandErrorHandler(fn: (error: unknown, msg: Message, command: string, args: string[]) => void): void {
     this.commandErrorHandler = fn;
   }
 
@@ -116,6 +113,7 @@ export class CommandManager {
    * commandManager.registerCommands(path.join(__dirname, "./commands"));
    * */
   async registerCommands(dir: string) {
+
 
     this.log(`=== ${chalk.blue("Registering command(s)")} ===`);
 
