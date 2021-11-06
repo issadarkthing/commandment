@@ -36,7 +36,7 @@ export class CommandManager {
     timeLeft: number
   ) => void;
   private commandErrorHandler?: (
-    err: unknown, msg?: Message, cmd?: string, args?: string[],
+    err: unknown, msg: Message, cmd: string, args: string[],
   ) => void;
   /**
    * Show command logging
@@ -98,9 +98,10 @@ export class CommandManager {
    * inside Command#execute will not be logged.
    * @param {Function} fn - Function to be executed when error is thrown
    * */
-  registerCommandErrorHandler(
-    fn: (error: unknown, msg?: Message, command?: string, args?: string[]) => void) 
-  {
+  registerCommandErrorHandler(fn: (error: unknown) => void): void;
+  registerCommandErrorHandler(fn: (error: unknown, msg: Message) => void): void;
+  registerCommandErrorHandler(fn: (error: unknown, msg: Message, command: string) => void): void;
+  registerCommandErrorHandler(fn: (error: unknown, msg: Message, command: string, args: string[]) => void) {
     this.commandErrorHandler = fn;
   }
 
