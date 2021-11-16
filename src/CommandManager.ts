@@ -41,7 +41,7 @@ export class CommandManager {
   /**
    * Show command logging
    * */
-  verbose = false;
+  verbose = true;
   /**
    * Bot's prefix
    * */
