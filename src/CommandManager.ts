@@ -184,6 +184,9 @@ export class CommandManager {
     if (!cmd.startsWith(this.prefix) || msg.author.bot) return;
 
     const commandName = cmd.replace(this.prefix, "");
+
+    if (!commandName) return;
+
     const command = this.commands.get(commandName);
     if (!command) {
       this.commandNotFoundHandler &&
