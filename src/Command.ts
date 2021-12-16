@@ -1,4 +1,5 @@
 import { Message } from "discord.js";
+import { CommandManager } from "./CommandManager";
 
 /**
  * Command is an abstract class that should be extended to make your own custom
@@ -37,6 +38,12 @@ export abstract class Command {
    * */
   description?: string;
 
+  commandManager: CommandManager;
+
+  constructor(manager: CommandManager) {
+    this.commandManager = manager;
+  }
+
   /** 
    * This is where your main logic should reside for a particular command. 
    * @param {Message} msg - Discord.js Message object
@@ -52,5 +59,13 @@ export abstract class Command {
   execute(msg: Message, args: string[]) {
     return this.exec.length === 2 ? 
       this.exec(msg, args) : this.exec(msg);
+  }
+
+  /** 
+   * Releases the user from command blocking. Use this if you think the block
+   * should be released early. 
+   * */
+  release(userID: string) {
+    this.commandManager.release(`${this.name}_${userID}`);
   }
 }

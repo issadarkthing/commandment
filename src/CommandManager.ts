@@ -58,6 +58,12 @@ export class CommandManager {
     this.verbose && console.log(...values);
   }
 
+  /** Release user from command blocking. Use this format for id:
+   * `commandName_userID` */
+  release(id: string) {
+    this.blockList.delete(id);
+  }
+
   /**
    * Register a singular command
    * @param {string} name - The name of the command
@@ -127,7 +133,7 @@ export class CommandManager {
       const filePath = path.join(dir, file);
       // eslint-disable-next-line
       const cmdFile = require(filePath);
-      const command: Command = new cmdFile.default();
+      const command: Command = new cmdFile.default(this);
       const now = performance.now();
       const timeTaken = now - initial;
 
