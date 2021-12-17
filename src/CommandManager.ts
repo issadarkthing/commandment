@@ -79,6 +79,11 @@ export class CommandManager {
     this.commands.set(name, cmd);
   }
 
+  /** 
+   * Register handler for missing permission. By default, the error will be
+   * ignored.
+   * @param {Function} fn - Function to be executed when permission is missing.
+   * */
   registerCommandMissingPermissionHandler(
     fn: (msg: Message, permission: PermissionResolvable[]) => void,
   ) {
