@@ -200,8 +200,9 @@ export class CommandManager {
       return;
     }
 
+    const id = `${command.name}_${msg.author.id}`;
+
     if (command.throttle !== 0) {
-      const id = `${commandName}_${msg.author.id}`;
 
       if (this.throttleList.has(id)) {
         const timeLeft = this.throttleList.get(id)! - Date.now();
@@ -224,6 +225,7 @@ export class CommandManager {
 
       setTimeout(() => this.throttleList.delete(id), command.throttle);
     }
+      
 
     try {
       const initial = performance.now();
@@ -238,20 +240,16 @@ export class CommandManager {
 
       };
 
-      const id = `${command.name}_${msg.author.id}`;
-      if (command.block) {
-        if (this.blockList.has(id)) {
-          msg.channel.send(
-            `There's already an instance of ${command.name} command running`
-          );
-        
-          return;
-        }
+      if (command.block && this.blockList.has(id)) {
+        msg.channel.send(
+          `There's already an instance of ${command.name} command running`
+        );
+
+        return;
       }
 
       command.block && this.blockList.add(id)
       await command.execute(msg, args);
-      command.block && this.blockList.delete(id);
       printTimeTaken();
 
     } catch (err) {
@@ -274,6 +272,10 @@ export class CommandManager {
       console.error(chalk.yellow("Checksum:"), checksum);
       console.error(chalk.yellow("Caused by:"), msg.author.username);
       console.error(err);
+
+    } finally {
+
+      command.block && this.blockList.delete(id);
     }
   }
 }
