@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { oneLine } from "common-tags";
-import { Message } from "discord.js";
+import { Message, PermissionResolvable } from "discord.js";
 import fs from "fs";
 import path from "path";
 import util from "util";
@@ -38,6 +38,8 @@ export class CommandManager {
   private commandErrorHandler?: (
     err: unknown, msg: Message, cmd: string, args: string[],
   ) => void;
+  private missingPermissionHandler?: 
+    (msg: Message, permissions: PermissionResolvable[]) => void;
   /**
    * Show command logging
    * */
@@ -75,6 +77,12 @@ export class CommandManager {
     }
 
     this.commands.set(name, cmd);
+  }
+
+  registerCommandMissingPermissionHandler(
+    fn: (msg: Message, permission: PermissionResolvable[]) => void,
+  ) {
+    this.missingPermissionHandler = fn;
   }
 
   /**
@@ -224,6 +232,21 @@ export class CommandManager {
       }
 
       setTimeout(() => this.throttleList.delete(id), command.throttle);
+    }
+
+    const member = msg.member;
+
+    if (command.permissions.length > 0 && member) {
+
+      const missingPermissions = 
+        command.permissions.filter(x => !member.permissions.has(x));
+
+      if (missingPermissions.length > 0) {
+        this.missingPermissionHandler && 
+          this.missingPermissionHandler(msg, missingPermissions);
+
+        return;
+      }
     }
       
 

@@ -18,6 +18,10 @@ commandManager.registerCommandOnThrottleHandler((msg, cmd, timeLeft) => {
   msg.channel.send(`You cannot run ${cmd.name} command after ${time} s`);
 })
 
+commandManager.registerCommandMissingPermissionHandler((msg, perms) => {
+  msg.channel.send(`Missing permissions \`${perms.join(", ")}\``);
+})
+
 client.on("ready", () => console.log(client.user?.username, "is ready!"))
 client.on("messageCreate", msg => commandManager.handleMessage(msg));
 

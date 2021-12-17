@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { Message, PermissionResolvable } from "discord.js";
 import { Command } from "../../index";
 
 export default class extends Command {
@@ -6,6 +6,7 @@ export default class extends Command {
   aliases = ["p"];
   throttle = 10 * 1000; // 10 seconds
   description = "To do something";
+  permissions: PermissionResolvable[] = ["BAN_MEMBERS", "KICK_MEMBERS"];
 
   exec(msg: Message) {
     msg.channel.send("pong");

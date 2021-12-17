@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { Message, PermissionResolvable } from "discord.js";
 import { CommandManager } from "./CommandManager";
 
 /**
@@ -37,6 +37,9 @@ export abstract class Command {
    * Add command description
    * */
   description?: string;
+
+  /** Required permissions to run this command */
+  permissions: PermissionResolvable[] = [];
 
   commandManager: CommandManager;
 
