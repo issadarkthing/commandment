@@ -61,12 +61,6 @@ export class CommandManager {
     this.verbose && console.log(...values);
   }
 
-  /** Release user from command blocking. Use this format for id:
-   * `commandName_userID` */
-  release(id: string) {
-    this.blockList.delete(id);
-  }
-
   /**
    * Register a singular command
    * @param {string} name - The name of the command
@@ -284,7 +278,6 @@ export class CommandManager {
         );
 
       };
-
 
 
       await command.execute(msg, args);
