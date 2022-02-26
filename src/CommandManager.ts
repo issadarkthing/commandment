@@ -7,6 +7,7 @@ import util from "util";
 import { sha1 } from "./utils";
 import { performance } from "perf_hooks";
 import { Command } from "./Command";
+import { Mutex, MutexInterface } from "async-mutex";
 //@ts-ignore
 import Table from "table-layout";
 
@@ -26,7 +27,7 @@ const readdir = util.promisify(fs.readdir);
  * */
 export class CommandManager {
   readonly commands = new Map<string, Command>();
-  private blockList = new Set<string>();
+  private blockList = new Map<string, MutexInterface>();
   private throttleList = new Map<string, number>();
   private commandRegisterLog: CommandLog[] = [];
   private commandNotFoundHandler?: (msg: Message, name: string) => void;
@@ -215,6 +216,10 @@ export class CommandManager {
 
     const id = `${command.name}_${msg.author.id}`;
 
+    if (!this.blockList.has(id)) {
+      this.blockList.set(id, new Mutex());
+    }
+
     if (command.throttle !== 0) {
 
       if (this.throttleList.has(id)) {
@@ -254,8 +259,20 @@ export class CommandManager {
       }
     }
       
+    const mutex = this.blockList.get(id)!;
+
+    if (mutex.isLocked()) {
+      msg.channel.send(
+        `There's already an instance of ${command.name} command running`
+      );
+
+      return;
+    }
+      
+    const release = await mutex.acquire();
 
     try {
+
       const initial = performance.now();
 
       const printTimeTaken = () => {
@@ -268,15 +285,8 @@ export class CommandManager {
 
       };
 
-      if (command.block && this.blockList.has(id)) {
-        msg.channel.send(
-          `There's already an instance of ${command.name} command running`
-        );
 
-        return;
-      }
 
-      command.block && this.blockList.add(id)
       await command.execute(msg, args);
       printTimeTaken();
 
@@ -303,7 +313,7 @@ export class CommandManager {
 
     } finally {
 
-      command.block && this.blockList.delete(id);
+      release();
     }
   }
 }
