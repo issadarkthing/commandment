@@ -63,12 +63,4 @@ export abstract class Command {
     return this.exec.length === 2 ? 
       this.exec(msg, args) : this.exec(msg);
   }
-
-  /** 
-   * Releases the user from command blocking. Use this if you think the block
-   * should be released early. 
-   * */
-  release(userID: string) {
-    this.commandManager.release(`${this.name}_${userID}`);
-  }
 }
