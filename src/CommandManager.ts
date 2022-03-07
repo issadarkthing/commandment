@@ -285,6 +285,9 @@ export class CommandManager {
 
     } catch (err) {
 
+      // remove command from throttle list when error is thrown
+      this.throttleList.delete(id);
+
       if (this.commandErrorHandler) {
         this.commandErrorHandler(err, msg, command.name, args);
         return;
