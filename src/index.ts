@@ -1,2 +1,3 @@
-export { Command } from "./Command";
-export { CommandManager } from "./CommandManager";
+export { Command } from "./structure/Command";
+export { CommandManager } from "./structure/CommandManager";
+export { CommandError } from "./structure/Error";
