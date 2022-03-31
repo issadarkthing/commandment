@@ -5,7 +5,7 @@ import { Message, MessageEmbed } from "discord.js";
  * Built in help command that shows all registered commands
  * @class
  * */
-export default class Help extends Command {
+export class Help extends Command {
   name = "help";
   aliases = ["h"];
   description = "show all commands and it's description";
