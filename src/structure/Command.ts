@@ -1,4 +1,4 @@
-import { Message, PermissionResolvable } from "discord.js";
+import { Message, MessageEmbed, PermissionResolvable } from "discord.js";
 import { CommandManager } from "./CommandManager";
 
 /**
@@ -62,5 +62,14 @@ export abstract class Command {
   execute(msg: Message, args: string[]) {
     return this.exec.length === 2 ? 
       this.exec(msg, args) : this.exec(msg);
+  }
+
+  /** 
+   * Helper method to send an embed messsage.
+   * @param {Message} msg - Discord.js Message object
+   * @param {MessageEmbed} embed - Discord.js MessageEmbed object
+   * */
+  sendEmbed(msg: Message, embed: MessageEmbed) {
+    return msg.channel.send({ embeds: [embed] });
   }
 }
