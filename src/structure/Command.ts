@@ -72,4 +72,21 @@ export abstract class Command {
   sendEmbed(msg: Message, embed: MessageEmbed) {
     return msg.channel.send({ embeds: [embed] });
   }
+
+  /** 
+   * Helper method to wrap a text message to an embed message and send it.
+   * @param {Message} msg - Discord.js Message object
+   * @param {string} text - Text message to be sent
+   * */
+  send(msg: Message, text: string) {
+
+    const embed = new MessageEmbed()
+      .setAuthor({
+        name : msg.author.username,
+        iconURL: msg.author.displayAvatarURL(),
+      })
+      .setDescription(text);
+
+    return this.sendEmbed(msg, embed);
+  }
 }
