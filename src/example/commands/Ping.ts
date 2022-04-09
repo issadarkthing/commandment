@@ -1,10 +1,11 @@
 import { Message, PermissionResolvable } from "discord.js";
-import { Command } from "../../index";
+import { Command, Duration } from "../../index";
 
 export default class extends Command {
   name = "ping";
   aliases = ["p"];
-  throttle = 10 * 1000; // 10 seconds
+  usageBeforeCooldown = 3;
+  cooldown: Duration = { seconds: 10 };
   description = "To do something";
   permissions: PermissionResolvable[] = ["BAN_MEMBERS", "KICK_MEMBERS"];
 

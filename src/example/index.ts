@@ -14,8 +14,7 @@ commandManager.registerCommandNotFoundHandler((msg, cmdName) => {
 })
 
 commandManager.registerCommandOnThrottleHandler((msg, cmd, timeLeft) => {
-  const time = (timeLeft / 1000).toFixed(2);
-  msg.channel.send(`You cannot run ${cmd.name} command after ${time} s`);
+  msg.channel.send(`You cannot run ${cmd.name} command for ${timeLeft}`);
 })
 
 commandManager.registerCommandMissingPermissionHandler((msg, perms) => {

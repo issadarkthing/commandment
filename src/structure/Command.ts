@@ -1,5 +1,8 @@
 import { Message, MessageEmbed, PermissionResolvable } from "discord.js";
+import { DurationLikeObject } from "luxon";
 import { CommandManager } from "./CommandManager";
+
+export interface Duration extends DurationLikeObject {};
 
 /**
  * Command is an abstract class that should be extended to make your own custom
@@ -24,9 +27,14 @@ export abstract class Command {
   block = false;
 
   /**
-   * Throttle time in millisecond. Negative numbers are not allowed.
+   * Cooldown time
    * */
-  throttle = 0;
+  cooldown?: DurationLikeObject;
+
+  /** 
+   * How many usages before command starts cooldown
+   * */
+  usageBeforeCooldown = 1;
 
   /** 
    * Disable command.

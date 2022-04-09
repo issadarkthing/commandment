@@ -10,6 +10,7 @@ import { Command } from "./Command";
 import { Mutex, MutexInterface } from "async-mutex";
 //@ts-ignore
 import Table from "table-layout";
+import { CooldownManager } from "./CooldownManager";
 
 /** Logging info */
 interface CommandLog {
@@ -28,19 +29,21 @@ const readdir = util.promisify(fs.readdir);
 export class CommandManager {
   readonly commands = new Map<string, Command>();
   private blockList = new Map<string, MutexInterface>();
-  private throttleList = new Map<string, number>();
+  private cooldown = new CooldownManager();
   private commandRegisterLog: CommandLog[] = [];
   private commandNotFoundHandler?: (msg: Message, name: string) => void;
   private commandOnThrottleHandler?: (
     msg: Message,
     command: Command,
-    timeLeft: number
+    timeLeft: string,
   ) => void;
   private commandErrorHandler?: (
     err: unknown, msg: Message, cmd: string, args: string[],
   ) => void;
   private missingPermissionHandler?: 
     (msg: Message, permissions: PermissionResolvable[]) => void;
+
+
   /**
    * Show command logging
    * */
@@ -101,7 +104,7 @@ export class CommandManager {
    * @param {Function} fn - Function to be executed when command is on throttle
    * */
   registerCommandOnThrottleHandler(
-    fn: (msg: Message, cmd: Command, timeLeft: number) => void,
+    fn: (msg: Message, cmd: Command, timeLeft: string) => void,
   ) {
     this.commandOnThrottleHandler = fn;
   }
@@ -214,10 +217,15 @@ export class CommandManager {
       this.blockList.set(id, new Mutex());
     }
 
-    if (command.throttle !== 0) {
+    if (command.cooldown) {
 
-      if (this.throttleList.has(id)) {
-        const timeLeft = this.throttleList.get(id)! - Date.now();
+      const authorID = msg.author.id;
+      const isCooldown = await this.cooldown.isOnCooldown(command.name, authorID);
+
+      if (isCooldown) {
+
+        const timeLeft = await this.cooldown.getTimeLeft(command.name, authorID);
+
         this.commandOnThrottleHandler &&
           this?.commandOnThrottleHandler(msg, command, timeLeft);
 
@@ -225,17 +233,18 @@ export class CommandManager {
           `${chalk.blue(command.name)} command is blocked due to throttling`
         );
         return;
+
       }
 
-      this.throttleList.set(id, Date.now() + command.throttle);
+      const commandUsage = await this.cooldown.getCommandUsage(command.name, authorID) + 1;
 
-      if (command.throttle < 0) {
-        throw new Error(
-          `${command.name}: throttle time cannot be less than zero`
-        );
+      if (commandUsage >= command.usageBeforeCooldown) {
+        await this.cooldown.setCooldown(command.name, authorID, command.cooldown);
+        await this.cooldown.resetComandUsage(command.name, authorID);
+      } else {
+        await this.cooldown.incCommandUsage(command.name, authorID);
       }
 
-      setTimeout(() => this.throttleList.delete(id), command.throttle);
     }
 
     const member = msg.member;
@@ -285,8 +294,11 @@ export class CommandManager {
 
     } catch (err) {
 
-      // remove command from throttle list when error is thrown
-      this.throttleList.delete(id);
+      if (command.cooldown) {
+        // remove command from throttle list when error is thrown
+        await this.cooldown.resetCooldown(command.name, msg.author.id);
+        await this.cooldown.decCommandUsage(command.name, msg.author.id);
+      }
 
       if (this.commandErrorHandler) {
         this.commandErrorHandler(err, msg, command.name, args);
