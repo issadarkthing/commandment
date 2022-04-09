@@ -3,6 +3,12 @@ import Josh from "@joshdb/core";
 //@ts-ignore
 import provider from "@joshdb/sqlite";
 
+export interface TimeLeft {
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
 export class CooldownManager {
   private db: Josh<Date>;
   private usage: Josh<number>;
@@ -74,15 +80,16 @@ export class CooldownManager {
     return !this.isPassed(lastSet);
   }
 
-  async getTimeLeft(commandID: string, userID: string): Promise<string | "ready"> {
+  async getTimeLeft(commandID: string, userID: string): 
+  Promise<TimeLeft> {
 
     const lastSet = await this.db.get(this.id(commandID, userID));
 
-    if (!lastSet) return "ready";
+    if (!lastSet) return { hours: 0, minutes: 0, seconds: 0 };
 
     const dt = DateTime.fromJSDate(lastSet);
 
-    if (this.isPassed(dt)) return "ready";
+    if (this.isPassed(dt)) return { hours: 0, minutes: 0, seconds: 0 };
 
     const { 
       hours, 
@@ -90,6 +97,6 @@ export class CooldownManager {
       seconds,
     } = dt.diffNow(["hours", "minutes", "seconds", "milliseconds"]);
 
-    return `${hours} hours, ${minutes} mins, ${seconds} secs`
+    return { hours, minutes, seconds };
   }
 }

@@ -10,7 +10,7 @@ import { Command } from "./Command";
 import { Mutex, MutexInterface } from "async-mutex";
 //@ts-ignore
 import Table from "table-layout";
-import { CooldownManager } from "./CooldownManager";
+import { CooldownManager, TimeLeft } from "./CooldownManager";
 
 /** Logging info */
 interface CommandLog {
@@ -35,7 +35,7 @@ export class CommandManager {
   private commandOnThrottleHandler?: (
     msg: Message,
     command: Command,
-    timeLeft: string,
+    timeLeft: TimeLeft,
   ) => void;
   private commandErrorHandler?: (
     err: unknown, msg: Message, cmd: string, args: string[],
@@ -104,7 +104,7 @@ export class CommandManager {
    * @param {Function} fn - Function to be executed when command is on throttle
    * */
   registerCommandOnThrottleHandler(
-    fn: (msg: Message, cmd: Command, timeLeft: string) => void,
+    fn: (msg: Message, cmd: Command, timeLeft: TimeLeft) => void,
   ) {
     this.commandOnThrottleHandler = fn;
   }
