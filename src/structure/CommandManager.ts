@@ -32,7 +32,7 @@ export class CommandManager {
   private cooldown = new CooldownManager();
   private commandRegisterLog: CommandLog[] = [];
   private commandNotFoundHandler?: (msg: Message, name: string) => void;
-  private commandOnThrottleHandler?: (
+  private commandOnCooldownHandler?: (
     msg: Message,
     command: Command,
     timeLeft: TimeLeft,
@@ -103,10 +103,10 @@ export class CommandManager {
    * continue be blocked without any message.
    * @param {Function} fn - Function to be executed when command is on throttle
    * */
-  registerCommandOnThrottleHandler(
+  registerCommandOnCooldownHandler(
     fn: (msg: Message, cmd: Command, timeLeft: TimeLeft) => void,
   ) {
-    this.commandOnThrottleHandler = fn;
+    this.commandOnCooldownHandler = fn;
   }
 
   /**
@@ -226,8 +226,8 @@ export class CommandManager {
 
         const timeLeft = await this.cooldown.getTimeLeft(command.name, authorID);
 
-        this.commandOnThrottleHandler &&
-          this?.commandOnThrottleHandler(msg, command, timeLeft);
+        this.commandOnCooldownHandler &&
+          this?.commandOnCooldownHandler(msg, command, timeLeft);
 
         this.log(
           `${chalk.blue(command.name)} command is blocked due to throttling`
