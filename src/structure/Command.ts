@@ -2,6 +2,7 @@ import { Message, MessageEmbed, PermissionResolvable } from "discord.js";
 import { DurationLikeObject } from "luxon";
 import { CommandManager } from "./CommandManager";
 
+/** Object that defines a duration */
 export interface Duration extends DurationLikeObject {};
 
 /**
@@ -29,7 +30,7 @@ export abstract class Command {
   /**
    * Cooldown time
    * */
-  cooldown?: DurationLikeObject;
+  cooldown?: Duration;
 
   /** 
    * How many usages before command starts cooldown
