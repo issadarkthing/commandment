@@ -13,7 +13,7 @@ commandManager.registerCommandNotFoundHandler((msg, cmdName) => {
   msg.channel.send(`Cannot find command "${cmdName}"`);
 })
 
-commandManager.registerCommandOnThrottleHandler((msg, cmd, timeLeft) => {
+commandManager.registerCommandOnCooldownHandler((msg, cmd, timeLeft) => {
   const { hours, minutes, seconds } = timeLeft;
   const fmtTimeLeft = `${hours}h ${minutes}m ${seconds}s`;
   msg.channel.send(`You cannot run ${cmd.name} command for **${fmtTimeLeft}**`);
