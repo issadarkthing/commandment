@@ -288,8 +288,16 @@ export class CommandManager {
 
       };
 
+      for (const preExec of command.preExec) {
+        await preExec(msg, args);
+      }
 
       await command.execute(msg, args);
+
+      for (const postExec of command.postExec) {
+        await postExec(msg, args);
+      }
+
       printTimeTaken();
 
     } catch (err) {

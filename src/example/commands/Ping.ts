@@ -1,5 +1,7 @@
 import { Message, PermissionResolvable } from "discord.js";
-import { Command, Duration } from "../../index";
+import { Command, Duration, Exec } from "../../index";
+import { postExec } from "../exec/postExec";
+import { checkArgs, preExec } from "../exec/preExec";
 
 export default class extends Command {
   name = "ping";
@@ -8,6 +10,8 @@ export default class extends Command {
   cooldown: Duration = { seconds: 10 };
   description = "To do something";
   permissions: PermissionResolvable[] = ["BAN_MEMBERS", "KICK_MEMBERS"];
+  preExec: Exec[] = [preExec, checkArgs];
+  postExec: Exec[] = [postExec];
 
   exec(msg: Message) {
     msg.channel.send("pong");

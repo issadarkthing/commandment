@@ -5,6 +5,9 @@ import { CommandManager } from "./CommandManager";
 /** Object that defines a duration */
 export interface Duration extends DurationLikeObject {};
 
+/** Executor function to be run before or after Command#exec */
+export type Exec = Command["exec"];
+
 /**
  * Command is an abstract class that should be extended to make your own custom
  * command. It also needs to be exported as default when using
@@ -50,7 +53,18 @@ export abstract class Command {
   /** Required permissions to run this command */
   permissions: PermissionResolvable[] = [];
 
+  /** Access to CommandManager */
   commandManager: CommandManager;
+
+  /** 
+   * Runs all functions in the array before Command#exec is executed
+   * */
+  preExec: Exec[] = [];
+
+  /** 
+   * Runs all functions in the array after Command#exec is executed
+   * */
+  postExec: Exec[] = [];
 
   constructor(manager: CommandManager) {
     this.commandManager = manager;

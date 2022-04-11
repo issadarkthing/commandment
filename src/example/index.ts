@@ -1,5 +1,5 @@
 import { Client } from "discord.js";
-import { CommandManager } from "../index";
+import { CommandError, CommandManager } from "../index";
 import path from "path";
 
 const COMMAND_PREFIX = "!";
@@ -8,6 +8,14 @@ const commandManager = new CommandManager(COMMAND_PREFIX);
 
 commandManager.verbose = true;
 commandManager.registerCommands(path.resolve(__dirname, "./commands"));
+
+commandManager.registerCommandErrorHandler((err, msg) => {
+  if (err instanceof CommandError) {
+    msg.channel.send(err.message);
+  } else {
+    console.log(err);
+  }
+})
 
 commandManager.registerCommandNotFoundHandler((msg, cmdName) => {
   msg.channel.send(`Cannot find command "${cmdName}"`);
