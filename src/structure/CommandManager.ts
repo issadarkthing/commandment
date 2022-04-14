@@ -213,7 +213,7 @@ export class CommandManager {
 
     const id = `${command.name}_${msg.author.id}`;
 
-    if (!this.blockList.has(id)) {
+    if (command.block && !this.blockList.has(id)) {
       this.blockList.set(id, new Mutex());
     }
 
