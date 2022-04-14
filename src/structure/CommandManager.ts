@@ -262,9 +262,9 @@ export class CommandManager {
       }
     }
       
-    const mutex = this.blockList.get(id)!;
+    const mutex = this.blockList.get(id);
 
-    if (mutex.isLocked()) {
+    if (mutex?.isLocked()) {
       msg.channel.send(
         `There's already an instance of ${command.name} command running`
       );
@@ -272,7 +272,7 @@ export class CommandManager {
       return;
     }
       
-    const release = await mutex.acquire();
+    const release = await mutex?.acquire();
 
     try {
 
@@ -329,7 +329,7 @@ export class CommandManager {
 
     } finally {
 
-      release();
+      release && release();
     }
   }
 }
