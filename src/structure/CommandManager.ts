@@ -230,7 +230,7 @@ export class CommandManager {
           this?.commandOnCooldownHandler(msg, command, timeLeft);
 
         this.log(
-          `${chalk.blue(command.name)} command is blocked due to throttling`
+          `${chalk.blue(command.name)} command is on cooldown`
         );
         return;
 
