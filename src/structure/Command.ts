@@ -108,6 +108,7 @@ export abstract class Command {
         name : msg.author.username,
         iconURL: msg.author.displayAvatarURL(),
       })
+      .setColor("RANDOM")
       .setDescription(text);
 
     return this.sendEmbed(msg, embed);
