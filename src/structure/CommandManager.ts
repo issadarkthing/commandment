@@ -32,6 +32,7 @@ export class CommandManager {
   private cooldown = new CooldownManager();
   private commandRegisterLog: CommandLog[] = [];
   private commandNotFoundHandler?: (msg: Message, name: string) => void;
+  private commandReleaseTimout = 10 * 1000;
   private commandOnCooldownHandler?: (
     msg: Message,
     command: Command,
@@ -62,6 +63,11 @@ export class CommandManager {
 
   private log(...values: any[]) {
     this.verbose && console.log(...values);
+  }
+
+  /** Set time to release blocking command. Defaults to 5s */
+  setCommandBlockingTimeout(time: number) {
+    this.commandReleaseTimout = time;
   }
 
   /**
@@ -273,6 +279,10 @@ export class CommandManager {
     }
       
     const release = await mutex?.acquire();
+
+    setTimeout(() => {
+      release && release();
+    }, this.commandReleaseTimout)
 
     try {
 
